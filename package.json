@@ -1,0 +1,14 @@
+{
+  "name": "xdm-reborn",
+  "version": "1.0",
+  "author": "AMXXPack",
+  "description": "AMXX plugin inspired by XDM (Xtreme Deathmatch)",
+  "scripts": {
+    "build": "amxxpack build",
+    "install": "amxxpack install",
+    "watch": "amxxpack build --watch"
+  },
+  "devDependencies": {
+    "amxxpack": "^1.4.7"
+  }
+}

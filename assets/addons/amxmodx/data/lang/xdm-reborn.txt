@@ -1,0 +1,23 @@
+[en]
+DESCRIPTION_RUNE_REGEN = Regeneration rune: Regenerates HP and HEV from once in a while.
+DESCRIPTION_RUNE_TRAP = Trap rune: When you die, an expansive wave is unleashed.
+DESCRIPTION_RUNE_CLOAK = Cloak rune: You become semi-invisible.
+DESCRIPTION_RUNE_SUPER_SPEED = Super Speed rune: You move a lot faster.
+DESCRIPTION_RUNE_LOW_GRAVITY = Low Gravity rune: Decrease gravity just for you.
+DESCRIPTION_RUNE_SUPER_GLOCK = Super Glock rune: Shoot glock at high speed.
+DESCRIPTION_RUNE_SUPER_JUMP = Super Jump rune: You can jump higher. (Use userune),
+DESCRIPTION_RUNE_TELEPORT = Teleport rune: Teleport to a random location. (Use userune)
+USERUNE_NO_RUNE = You haven't picked up a rune.
+USERUNE_TELEPORT_COOLDOWN = You have to wait %.1f seconds to use this rune again.
+
+[es]
+DESCRIPTION_RUNE_REGEN = Runa de regeneracion: Te regenera HP y HEV cada cierto tiempo.
+DESCRIPTION_RUNE_TRAP = Runa de Trampa: Cuando mueres, se desata una onda expansiva que hace dano.
+DESCRIPTION_RUNE_CLOAK = Runa Cloak: Te vuelves semi-invisible.
+DESCRIPTION_RUNE_SUPER_SPEED = Runa Super Velocidad: Te mueves muchisimo mas rapido.
+DESCRIPTION_RUNE_LOW_GRAVITY = Runa Baja Gravedad: Disminuye la gravedad solo para ti.
+DESCRIPTION_RUNE_SUPER_GLOCK = Runa Super Pistola: Disparas la pistola a gran velocidad
+DESCRIPTION_RUNE_SUPER_JUMP = Runa Super Salto: Puedes saltar mas alto. (Usa userune)
+DESCRIPTION_RUNE_TELEPORT = Runa Teletransporte: Te teletransporta a un lugar aleatorio. (Usa userune)
+USERUNE_NO_RUNE = No has agarrado ninguna runa.
+USERUNE_TELEPORT_COOLDOWN = Tienes que esperar %.1f segundos para usar esta runa de nuevo.
