@@ -69,6 +69,8 @@
 #define NUMBER_RUNES                8
 #define SIZE_WEAPONS                14
 #define SIZE_AMMO                   11
+#define SIZE_BAN_WEAPONS            14
+#define SIZE_AMMO_ENTS              9
 #define UNINITIALIZED_DESTINATION   72769.420
 
 #define PLUGIN                      "XDM Reborn"
@@ -97,8 +99,14 @@ enum (+=1) {
 new g_cvarStartHP;
 new g_cvarStartHEV;
 new g_cvarStartLongJump;
+new g_cvarBanHealthKit;
+new g_cvarBanBattery;
+new g_cvarBanRecharge;
+new g_cvarBanLongJump;
 new g_cvarStartWeapons[SIZE_WEAPONS];
 new g_cvarStartAmmo[SIZE_AMMO];
+new g_cvarBanWeapons[SIZE_BAN_WEAPONS];
+new g_cvarBanAmmo[SIZE_AMMO_ENTS];
 
 new g_cvarReloadSpeed;
 new g_cvarPlayerSpeed;
@@ -188,6 +196,35 @@ new const g_vsCvarStartAmmo[SIZE_AMMO][] = {
     "xdm_start_snark",
 };
 
+new const g_vsCvarBanWeapons[SIZE_BAN_WEAPONS][] = {
+    "xdm_ban_357",
+    "xdm_ban_mp5",
+    "xdm_ban_glock",
+    "xdm_ban_crossbow",
+    "xdm_ban_crowbar",
+    "xdm_ban_gauss",
+    "xdm_ban_egon",
+    "xdm_ban_hgrenade",
+    "xdm_ban_hornet",
+    "xdm_ban_rpg",
+    "xdm_ban_satchel",
+    "xdm_ban_shotgun",
+    "xdm_ban_snark",
+    "xdm_ban_tripmine",
+};
+
+new const g_vsCvarBanAmmo[SIZE_AMMO_ENTS][] = {
+    "xdm_ban_357ammo",
+    "xdm_ban_9mmar",
+    "xdm_ban_9mmar",
+    "xdm_ban_9mmar",
+    "xdm_ban_m203",
+    "xdm_ban_bolts",
+    "xdm_ban_uranium",
+    "xdm_ban_rockets",
+    "xdm_ban_buckshot"
+};
+
 new const g_vszWeaponClass[][] = {
     "weapon_gauss",
     "weapon_357",
@@ -203,6 +240,18 @@ new const g_vszWeaponClass[][] = {
     "weapon_shotgun",
     "weapon_snark",
     "weapon_tripmine",
+};
+
+new const g_vszAmmoClass[][] = {
+    "ammo_357",
+    "ammo_9mmAR",
+    "ammo_9mmbox",
+    "ammo_9mmclip",
+    "ammo_ARgrenades",
+    "ammo_crossbow",
+    "ammo_gaussclip",
+    "ammo_rpgclip",
+    "ammo_buckshot"
 };
 
 new const g_vszCustomReloadRateWeapons[][] = {
@@ -306,6 +355,19 @@ public plugin_precache() {
         for (new i; i < sizeof g_cvarStartAmmo; i++) {
             g_cvarStartAmmo[i] = create_cvar(g_vsCvarStartAmmo[i], "0");
         }
+
+        for (new i; i < sizeof g_cvarBanWeapons; i++) {
+            g_cvarBanWeapons[i] = create_cvar(g_vsCvarBanWeapons[i], "0");
+        }
+
+        for (new i; i < sizeof g_cvarBanAmmo; i++) {
+            g_cvarBanAmmo[i] = create_cvar(g_vsCvarBanAmmo[i], "0");
+        }
+
+        g_cvarBanHealthKit = create_cvar("xdm_ban_health_kit", "0");
+        g_cvarBanBattery = create_cvar("xdm_ban_battery", "0");
+        g_cvarBanRecharge = create_cvar("xdm_ban_recharge", "0");
+        g_cvarBanLongJump = create_cvar("xdm_ban_longjump", "0");
     }
 
     g_cvarReloadSpeed = create_cvar("xdm_reload_speed", "0.5");
@@ -366,6 +428,8 @@ public plugin_precache() {
         server_cmd("exec xdm.cfg");
         server_exec();
     }
+
+    load_banned_entities();
 
     set_cvar_float("sv_maxspeed", get_pcvar_float(g_cvarSuperSpeedVelocity));
 }
@@ -565,6 +629,32 @@ public set_initial_equipment(iPlayer) {
     }
 }
 
+public load_banned_entities() {
+    for (new i; i < SIZE_BAN_WEAPONS; i++) {
+        if (get_pcvar_num(g_cvarBanWeapons[i])) {
+            remove_entity_name(g_vszWeaponClass[i]);
+        }
+    }
+
+    for (new i; i < SIZE_AMMO_ENTS; i++) {
+        if (get_pcvar_num(g_cvarBanAmmo[i])) {
+            remove_entity_name(g_vszAmmoClass[i]);
+        }
+    }
+
+    if (get_pcvar_num(g_cvarBanHealthKit)) {
+        remove_entity_name("item_healthkit");
+    }
+
+    if (get_pcvar_num(g_cvarBanBattery)) {
+        remove_entity_name("item_battery");
+    }
+
+    if (get_pcvar_num(g_cvarBanLongJump)) {
+        remove_entity_name("item_longjump");
+    }
+}
+
 public fwd_game_description() {
     forward_return(FMV_STRING, PLUGIN + " " + VERSION);
     return FMRES_SUPERCEDE;
@@ -590,23 +680,35 @@ public fwd_player_spawn_post(iPlayer) {
 }
 
 public fwd_use_charger_pre(iEntity, iPlayer) {
+    if (get_pcvar_bool(g_cvarBanRecharge)) return HAM_SUPERCEDE;
+
     g_iJuice = get_ent_data(iEntity, "CRecharge", "m_iJuice");
+
+    return HAM_IGNORED;
 }
 
 public fwd_use_hp_charger_post(iEntity, iPlayer) {
+    if (get_pcvar_bool(g_cvarBanRecharge)) return HAM_SUPERCEDE;
+    
     new iJuicePost = get_ent_data(iEntity, "CRecharge", "m_iJuice");
     if (g_iJuice != iJuicePost) {
         hl_set_user_health(iPlayer, min(100, hl_get_user_health(iPlayer) + 4));
         set_ent_data(iEntity, "CRecharge", "m_iJuice", max(0, iJuicePost - 4));
     }
+
+    return HAM_IGNORED;
 }
 
 public fwd_use_hev_charger_post(iEntity, iPlayer) {
+    if (get_pcvar_bool(g_cvarBanRecharge)) return HAM_SUPERCEDE;
+    
     new iJuicePost = get_ent_data(iEntity, "CRecharge", "m_iJuice");
     if (g_iJuice != iJuicePost) {
         hl_set_user_armor(iPlayer, min(100, hl_get_user_armor(iPlayer) + 4));
         set_ent_data(iEntity, "CRecharge", "m_iJuice", max(0, iJuicePost - 4));
     }
+
+    return HAM_IGNORED;
 }
 
 public find_game_player_equip() {
