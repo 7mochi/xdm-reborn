@@ -71,6 +71,7 @@
 #define SIZE_AMMO                   11
 #define SIZE_BAN_WEAPONS            14
 #define SIZE_AMMO_ENTS              9
+#define SIZE_DAMAGE_WEAPONS         16
 #define UNINITIALIZED_DESTINATION   72769.420
 
 #define PLUGIN                      "XDM Reborn"
@@ -107,6 +108,8 @@ new g_cvarStartWeapons[SIZE_WEAPONS];
 new g_cvarStartAmmo[SIZE_AMMO];
 new g_cvarBanWeapons[SIZE_BAN_WEAPONS];
 new g_cvarBanAmmo[SIZE_AMMO_ENTS];
+new g_cvarXdmDamageWeapons[SIZE_DAMAGE_WEAPONS];
+new g_cvarMpDamageWeapons[SIZE_DAMAGE_WEAPONS];
 
 new g_cvarReloadSpeed;
 new g_cvarPlayerSpeed;
@@ -223,6 +226,44 @@ new const g_vsCvarBanAmmo[SIZE_AMMO_ENTS][] = {
     "xdm_ban_uranium",
     "xdm_ban_rockets",
     "xdm_ban_buckshot"
+};
+
+new const g_vszXdmDamageWeapons[SIZE_DAMAGE_WEAPONS][] = {
+    "xdm_dmg_crowbar",
+    "xdm_dmg_glock",
+    "xdm_dmg_357",
+    "xdm_dmg_mp5",
+    "xdm_dmg_shotgun",
+    "xdm_dmg_bolts_normal",
+    "xdm_dmg_bolts_explosion",
+    "xdm_dmg_rpg",
+    "xdm_dmg_gauss",
+    "xdm_dmg_gauss_secondary",
+    "xdm_dmg_egon",
+    "xdm_dmg_hornet",
+    "xdm_dmg_hgrenade",
+    "xdm_dmg_satchel",
+    "xdm_dmg_tripmine",
+    "xdm_dmg_m203"
+};
+
+new const g_vszMpDamageWeapons[SIZE_DAMAGE_WEAPONS][] = {
+    "mp_dmg_crowbar",
+    "mp_dmg_glock",
+    "mp_dmg_357",
+    "mp_dmg_mp5",
+    "mp_dmg_shotgun",
+    "mp_dmg_xbow_scope",
+    "mp_dmg_xbow_noscope",
+    "mp_dmg_rpg",
+    "mp_dmg_gauss_primary",
+    "mp_dmg_gauss_secondary",
+    "mp_dmg_egon",
+    "mp_dmg_hornet",
+    "mp_dmg_hgrenade",
+    "mp_dmg_satchel",
+    "mp_dmg_tripmine",
+    "mp_dmg_m203",
 };
 
 new const g_vszWeaponClass[][] = {
@@ -368,6 +409,16 @@ public plugin_precache() {
         g_cvarBanBattery = create_cvar("xdm_ban_battery", "0");
         g_cvarBanRecharge = create_cvar("xdm_ban_recharge", "0");
         g_cvarBanLongJump = create_cvar("xdm_ban_longjump", "0");
+
+        new szValue[32];
+        for (new i = 0; i < SIZE_DAMAGE_WEAPONS; i++) {
+            g_cvarMpDamageWeapons[i] = get_cvar_pointer(g_vszMpDamageWeapons[i]);
+
+            get_pcvar_string(g_cvarMpDamageWeapons[i], szValue, charsmax(szValue));
+
+            g_cvarXdmDamageWeapons[i] = create_cvar(g_vszXdmDamageWeapons[i], szValue);
+            hook_cvar_change(g_cvarXdmDamageWeapons[i], "hook_cvar_xdm_damage_weapons");
+        }
     }
 
     g_cvarReloadSpeed = create_cvar("xdm_reload_speed", "0.5");
@@ -652,6 +703,15 @@ public load_banned_entities() {
 
     if (get_pcvar_num(g_cvarBanLongJump)) {
         remove_entity_name("item_longjump");
+    }
+}
+
+public hook_cvar_xdm_damage_weapons(pcvar, const szOldValue[], const szNewValue[]) {
+    for (new i; i < sizeof g_cvarXdmDamageWeapons; i++) {
+        if (g_cvarXdmDamageWeapons[i] == pcvar) {
+            set_pcvar_string(g_cvarMpDamageWeapons[i], szNewValue);
+            return;
+        }
     }
 }
 
