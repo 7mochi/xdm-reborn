@@ -12,7 +12,7 @@
     - Faster firing and reloading for some weapons
     - Faster recharge for health and armor
     - Choose which weapons and ammo the player will start with (Configurable via cvars)
-    - TODO: Choose how much damage each weapon does (Configurable via cvars)
+    - Choose how much damage each weapon does (Configurable via cvars)
     - You can throw the crowbar and kill enemies with it (Damage configurable via cvar)
     - Fly though the air with a grappling hook (You need to bind a key to "+hook" to use it).
     - TODO: Add damage to hook
