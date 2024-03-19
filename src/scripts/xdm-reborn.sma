@@ -478,9 +478,9 @@ public plugin_precache() {
     if (!g_bIsAGServer) {
         server_cmd("exec xdm.cfg");
         server_exec();
-    }
 
-    load_banned_entities();
+        load_banned_entities();
+    }
 
     set_cvar_float("sv_maxspeed", get_pcvar_float(g_cvarSuperSpeedVelocity));
 }
