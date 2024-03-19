@@ -85,7 +85,7 @@ enum (+=727) {
     TASK_REGENERATION
 }
 
-enum (+=1) {
+enum {
     RUNE_NONE = 0,
     RUNE_REGEN,
     RUNE_TRAP,
