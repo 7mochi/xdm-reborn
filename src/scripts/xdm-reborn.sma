@@ -168,7 +168,7 @@ new const RUNE_TRAP_SHOCKWAVE_SPRITE[] = "sprites/shockwave.spr";
 new const RUNE_TRAP_SHOCKWAVE_SOUND[] = "weapons/explode3.wav";
 new const RUNE_TRAP_SHOCKWAVE_WEAPON_NAME[] = "Blast Explosion";
 
-new const g_vsCvarStartWeapons[SIZE_WEAPONS][] = {
+new const g_vszCvarStartWeapons[SIZE_WEAPONS][] = {
     "xdm_start_357",
     "xdm_start_mp5",
     "xdm_start_glock",
@@ -185,7 +185,7 @@ new const g_vsCvarStartWeapons[SIZE_WEAPONS][] = {
     "xdm_start_tripmine",
 };
 
-new const g_vsCvarStartAmmo[SIZE_AMMO][] = {
+new const g_vszCvarStartAmmo[SIZE_AMMO][] = {
     "xdm_start_bockshot",
     "xdm_start_9mmar",
     "xdm_start_m203",
@@ -199,7 +199,7 @@ new const g_vsCvarStartAmmo[SIZE_AMMO][] = {
     "xdm_start_snark",
 };
 
-new const g_vsCvarBanWeapons[SIZE_BAN_WEAPONS][] = {
+new const g_vszCvarBanWeapons[SIZE_BAN_WEAPONS][] = {
     "xdm_ban_357",
     "xdm_ban_mp5",
     "xdm_ban_glock",
@@ -216,7 +216,7 @@ new const g_vsCvarBanWeapons[SIZE_BAN_WEAPONS][] = {
     "xdm_ban_tripmine",
 };
 
-new const g_vsCvarBanAmmo[SIZE_AMMO_ENTS][] = {
+new const g_vszCvarBanAmmo[SIZE_AMMO_ENTS][] = {
     "xdm_ban_357ammo",
     "xdm_ban_9mmar",
     "xdm_ban_9mmar",
@@ -390,19 +390,19 @@ public plugin_precache() {
         g_cvarStartLongJump = create_cvar("xdm_start_longjump", "0");
         
         for (new i; i < sizeof g_cvarStartWeapons; i++) {
-            g_cvarStartWeapons[i] = create_cvar(g_vsCvarStartWeapons[i], "0");
+            g_cvarStartWeapons[i] = create_cvar(g_vszCvarStartWeapons[i], "0");
         }
 
         for (new i; i < sizeof g_cvarStartAmmo; i++) {
-            g_cvarStartAmmo[i] = create_cvar(g_vsCvarStartAmmo[i], "0");
+            g_cvarStartAmmo[i] = create_cvar(g_vszCvarStartAmmo[i], "0");
         }
 
         for (new i; i < sizeof g_cvarBanWeapons; i++) {
-            g_cvarBanWeapons[i] = create_cvar(g_vsCvarBanWeapons[i], "0");
+            g_cvarBanWeapons[i] = create_cvar(g_vszCvarBanWeapons[i], "0");
         }
 
         for (new i; i < sizeof g_cvarBanAmmo; i++) {
-            g_cvarBanAmmo[i] = create_cvar(g_vsCvarBanAmmo[i], "0");
+            g_cvarBanAmmo[i] = create_cvar(g_vszCvarBanAmmo[i], "0");
         }
 
         g_cvarBanHealthKit = create_cvar("xdm_ban_health_kit", "0");
