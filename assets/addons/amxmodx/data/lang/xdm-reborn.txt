@@ -1,4 +1,6 @@
 [en]
+XDM_AG_CANT_RUN = XDM Reborn can only be run in the xdm gamemode on AG 6.6 or its Mini version for HL
+XDM_AG_GAMEMODE_NOT_FOUND = XDM Reborn gamemode file not found, moving xdm_ag.cfg to gamemodes/xdm.cfg
 DESCRIPTION_RUNE_REGEN = Regeneration rune: Regenerates HP and HEV from once in a while.
 DESCRIPTION_RUNE_TRAP = Trap rune: When you die, an expansive wave is unleashed.
 DESCRIPTION_RUNE_CLOAK = Cloak rune: You become semi-invisible.
@@ -11,6 +13,8 @@ USERUNE_NO_RUNE = You haven't picked up a rune.
 USERUNE_TELEPORT_COOLDOWN = You have to wait %.1f seconds to use this rune again.
 
 [es]
+XDM_AG_CANT_RUN = XDM Reborn solo puede ser ejecutado en el modo de juego xdm en AG 6.6 o su version Mini para HL
+XDM_AG_GAMEMODE_NOT_FOUND = Archivo de modo de juego XDM Reborn no encontrado, moviendo xdm_ag.cfg a gamemodes/xdm.cfg
 DESCRIPTION_RUNE_REGEN = Runa de regeneracion: Te regenera HP y HEV cada cierto tiempo.
 DESCRIPTION_RUNE_TRAP = Runa de Trampa: Cuando mueres, se desata una onda expansiva que hace dano.
 DESCRIPTION_RUNE_CLOAK = Runa Cloak: Te vuelves semi-invisible.

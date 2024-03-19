@@ -139,6 +139,8 @@ new g_cvarSuperJumpHeight;
 new g_cvarTeleportDistance;
 new g_cvarTeleportCooldown;
 
+new const AG_GAMEMODE_FILE[] = "gamemodes/xdm.cfg";
+
 new const RUNE_MODEL[] = "models/xdm_rune.mdl";
 new const RUNE_PICKUP_SOUND[] = "xdm.wav";
 new const RUNE_CLASSNAME[] = "func_rune";
@@ -255,6 +257,7 @@ new const g_vszInflictorToIgnore[][] = {
 };
 
 new bool:g_bGamePlayerEquipExists;
+new bool:g_bIsAGServer;
 new bool:g_vbHook[MAX_PLAYERS + 1];
 new Float:g_vfHookTo[MAX_PLAYERS + 1][3];
 new Float:g_vfTeleportLastUsed[MAX_PLAYERS + 1];
@@ -271,16 +274,38 @@ new g_iCylinderSprite;
 new g_iDeathMsg;
 
 public plugin_precache() {
-    g_cvarStartHP = create_cvar("xdm_start_hp", "100");
-    g_cvarStartHEV = create_cvar("xdm_start_hev", "0");
-    g_cvarStartLongJump = create_cvar("xdm_start_longjump", "0");
+    register_dictionary("xdm-reborn.txt");
     
-    for (new i; i < sizeof g_cvarStartWeapons; i++) {
-        g_cvarStartWeapons[i] = create_cvar(g_vsCvarStartWeapons[i], "0");
+    if (cvar_exists("sv_ag_version")) {
+        g_bIsAGServer = true;
     }
 
-    for (new i; i < sizeof g_cvarStartAmmo; i++) {
-        g_cvarStartAmmo[i] = create_cvar(g_vsCvarStartAmmo[i], "0");
+    if (g_bIsAGServer) {
+        if (!file_exists(AG_GAMEMODE_FILE)) {
+            server_print("%l", "XDM_AG_GAMEMODE_NOT_FOUND");
+            rename_file("xdm_ag.cfg", AG_GAMEMODE_FILE, 1);
+        }
+        
+        new szGameMode[32];
+        get_cvar_string("sv_ag_gamemode", szGameMode, charsmax(szGameMode));
+
+        if (!equal(szGameMode, "xdm")) {
+            server_print("%l", "XDM_AG_CANT_RUN");
+            pause("ad");
+            return;
+        }
+    } else {
+        g_cvarStartHP = create_cvar("xdm_start_hp", "100");
+        g_cvarStartHEV = create_cvar("xdm_start_hev", "0");
+        g_cvarStartLongJump = create_cvar("xdm_start_longjump", "0");
+        
+        for (new i; i < sizeof g_cvarStartWeapons; i++) {
+            g_cvarStartWeapons[i] = create_cvar(g_vsCvarStartWeapons[i], "0");
+        }
+
+        for (new i; i < sizeof g_cvarStartAmmo; i++) {
+            g_cvarStartAmmo[i] = create_cvar(g_vsCvarStartAmmo[i], "0");
+        }
     }
 
     g_cvarReloadSpeed = create_cvar("xdm_reload_speed", "0.5");
@@ -337,7 +362,10 @@ public plugin_precache() {
 
     g_iDeathMsg = get_user_msgid("DeathMsg");
 
-    server_cmd("exec xdm.cfg");
+    if (!g_bIsAGServer) {
+        server_cmd("exec xdm.cfg");
+        server_exec();
+    }
 
     set_cvar_float("sv_maxspeed", get_pcvar_float(g_cvarSuperSpeedVelocity));
 }
@@ -345,7 +373,6 @@ public plugin_precache() {
 public plugin_init() {
     register_plugin(PLUGIN, VERSION, AUTHOR);
     register_forward(FM_GetGameDescription, "fwd_game_description");
-    register_dictionary("xdm-reborn.txt");
     
     register_clcmd("spectate", "cmd_spectate");
     register_clcmd("userune", "cmd_userune");
@@ -554,7 +581,7 @@ public fwd_player_spawn_post(iPlayer) {
     if (is_user_alive(iPlayer)) {
         set_user_maxspeed(iPlayer, get_pcvar_float(g_cvarPlayerSpeed));
 
-        if (!g_bGamePlayerEquipExists) {
+        if (!g_bGamePlayerEquipExists && !g_bIsAGServer) {
             hl_strip_user_weapon(iPlayer, HLW_GLOCK);
             hl_strip_user_weapon(iPlayer, HLW_CROWBAR);
             set_initial_equipment(iPlayer);
