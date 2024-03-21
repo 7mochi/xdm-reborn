@@ -479,8 +479,6 @@ public plugin_precache() {
         server_cmd("exec xdm.cfg");
         server_exec();
     }
-
-    set_cvar_float("sv_maxspeed", get_pcvar_float(g_cvarSuperSpeedVelocity));
 }
 
 public plugin_init() {
@@ -535,6 +533,8 @@ public plugin_init() {
 }
 
 public plugin_cfg() {
+    set_cvar_float("sv_maxspeed", get_pcvar_float(g_cvarSuperSpeedVelocity));
+
     g_bGamePlayerEquipExists = find_game_player_equip() ? true : false;
     
     ROGInitialize(200.0);
