@@ -478,8 +478,6 @@ public plugin_precache() {
     if (!g_bIsAGServer) {
         server_cmd("exec xdm.cfg");
         server_exec();
-
-        load_banned_entities();
     }
 
     set_cvar_float("sv_maxspeed", get_pcvar_float(g_cvarSuperSpeedVelocity));
@@ -530,6 +528,10 @@ public plugin_init() {
     RegisterHam(Ham_Use, "func_recharge", "fwd_use_hev_charger_post", 1);
 
     g_iHudDisplayRuneDetails = CreateHudSyncObj();
+
+    if (!g_bIsAGServer) {
+        remove_banned_entities();
+    }
 }
 
 public plugin_cfg() {
@@ -680,7 +682,7 @@ public set_initial_equipment(iPlayer) {
     }
 }
 
-public load_banned_entities() {
+public remove_banned_entities() {
     for (new i; i < SIZE_BAN_WEAPONS; i++) {
         if (get_pcvar_num(g_cvarBanWeapons[i])) {
             remove_entity_name(g_vszWeaponClass[i]);
