@@ -1,7 +1,7 @@
 {
   "compiler": {
     "dir": "./.compiler",
-    "version": "1.9.0-git5294",
+    "version": "1.9.0-git5303",
     "dev": true,
     "addons": [],
     "executable": "amxxpc"
@@ -12,13 +12,27 @@
   ],
   "input": {
     "scripts": "./src/scripts",
-    "assets": "./assets"
+    "assets": [
+      "./assets",
+      { "dir": "./.thirdparty/bugfixedhl", "filter": ["dlls/hl.dll", "dlls/hl.so"] }
+    ]
   },
   "output": {
     "plugins": "./dist/valve/addons/amxmodx/plugins",
     "assets": "./dist/valve",
     "scripts": "./dist/valve/addons/amxmodx/scripting",
     "include": "./dist/valve/addons/amxmodx/scripting/include"
+  },
+  "thirdparty": {
+    "dir": "./.thirdparty",
+    "dependencies": [
+      {
+        "name": "bugfixedhl",
+        "url": "https://github.com/tmp64/BugfixedHL-Rebased/releases/download/v1.13.2/BugfixedHL-1.13.2-server.zip",
+        "strip": 2,
+        "filter": ["dlls/hl.dll", "dlls/hl.so"]
+      }
+    ]
   },
   "rules": {
     "flatCompilation": true
