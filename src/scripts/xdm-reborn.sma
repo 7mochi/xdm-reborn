@@ -75,7 +75,7 @@
 #define UNINITIALIZED_DESTINATION   72769.420
 
 #define PLUGIN                      "XDM Reborn"
-#define VERSION                     "1.0.2"
+#define VERSION                     "1.0"
 #define AUTHOR                      "7mochi"
 
 enum (+=727) {
