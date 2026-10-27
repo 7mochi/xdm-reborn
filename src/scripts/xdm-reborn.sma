@@ -52,9 +52,9 @@
     - Intel Extreme Masters
 
     # Contact:
-    - E-mail: flyingcatdm@gmail.com
-    - Discord: _7mochi
-    - Steam: https://steamcommunity.com/id/nanamochi/
+    - E-mail: alonso.caychop@protonmail.com
+    - Discord: _7mochi_
+    - Steam: https://steamcommunity.com/id/_7mochi/
 */
 #include <amxmodx>
 #include <amxmisc>
@@ -517,7 +517,7 @@ public plugin_init() {
     RegisterHam(Ham_Weapon_PrimaryAttack, "weapon_9mmhandgun", "fwd_glock_primary_attack_pre", 0);
     RegisterHam(Ham_Weapon_PrimaryAttack, "weapon_9mmhandgun", "fwd_glock_primary_attack_post", 1);
     
-    RegisterHam(Ham_Killed, "player", "fwd_player_killed"); // TODO: Maybe hook on post instead of pre?
+    RegisterHam(Ham_Killed, "player", "fwd_player_killed");
     RegisterHam(Ham_Spawn, "player", "fwd_player_spawn_post", 1);
 
     RegisterHam(Ham_Use, "func_healthcharger", "fwd_use_charger_pre", 0);
@@ -1267,12 +1267,12 @@ public create_explosion(iVictim, iAttacker, Float:fDamage, Float:fRange) {
                 write_byte(0);
                 write_string(RUNE_TRAP_SHOCKWAVE_WEAPON_NAME);
                 message_end();
+
+                if (iVictim != iAttacker) {
+                    set_user_frags(iVictim, get_user_frags(iVictim) + get_pcvar_num(g_cvarTrapFragBonus));
+                }
             }
         }
-    }
-
-    if (iVictim != iAttacker) {
-        set_user_frags(iVictim, get_user_frags(iVictim) + get_pcvar_num(g_cvarTrapFragBonus));
     }
 }
 
