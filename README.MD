@@ -1,9 +1,9 @@
 # XDM Reborn
 
 XDM Reborn is an open-source AMX Mod X plugin inspired by
-[XDM (Xtreme Deathmatch)](https://github.com/7mochi/HL1-XDM-Plugin). It brings
-fast-paced Half-Life deathmatch with configurable loadouts, weapon damage, a
-grappling hook, a throwable crowbar and rune powerups.
+[XDM (Xtreme Deathmatch)](https://www.gamefront.com/games/half-life/file/half-life-xtreme-deathmatch-v1-1-installer).
+It brings fast-paced Half-Life deathmatch with configurable loadouts, weapon
+damage, a grappling hook, a throwable crowbar and rune powerups.
 
 The original XDM is closed source, old and windows-only. XDM Reborn aims to be
 a modern alternative that is easy to configure, extend and run.
