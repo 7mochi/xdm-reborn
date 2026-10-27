@@ -9,10 +9,8 @@
     "watch": "amxxpack build --watch",
     "clean": "rimraf .compiler .thirdparty dist"
   },
-  "devDependencies": {
-    "amxxpack": "^1.5.3"
-  },
   "dependencies": {
+    "amxxpack": "^1.5.3",
     "rimraf": "^6.1.3"
   }
 }
