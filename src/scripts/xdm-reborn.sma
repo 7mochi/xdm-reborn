@@ -68,7 +68,7 @@
 
 #define NUMBER_RUNES                8
 #define SIZE_WEAPONS                14
-#define SIZE_AMMO                   11
+#define SIZE_AMMO                   7
 #define SIZE_BAN_WEAPONS            14
 #define SIZE_AMMO_ENTS              9
 #define SIZE_DAMAGE_WEAPONS         16
@@ -219,12 +219,12 @@ new const RUNE_TRAP_SHOCKWAVE_SOUND[] = "weapons/explode3.wav";
 new const RUNE_TRAP_SHOCKWAVE_WEAPON_NAME[] = "Blast Explosion";
 
 new const g_vszCvarStartWeapons[SIZE_WEAPONS][] = {
+    "xdm_start_gauss",
     "xdm_start_357",
     "xdm_start_mp5",
     "xdm_start_glock",
     "xdm_start_crossbow",
     "xdm_start_crowbar",
-    "xdm_start_gauss",
     "xdm_start_egon",
     "xdm_start_hgrenade",
     "xdm_start_hornet",
@@ -243,19 +243,15 @@ new const g_vszCvarStartAmmo[SIZE_AMMO][] = {
     "xdm_start_uranium",
     "xdm_start_rockets",
     "xdm_start_bolts",
-    "xdm_start_tripmine",
-    "xdm_start_satchel",
-    "xdm_start_hgrenade",
-    "xdm_start_snark",
 };
 
 new const g_vszCvarBanWeapons[SIZE_BAN_WEAPONS][] = {
+    "xdm_ban_gauss",
     "xdm_ban_357",
     "xdm_ban_mp5",
     "xdm_ban_glock",
     "xdm_ban_crossbow",
     "xdm_ban_crowbar",
-    "xdm_ban_gauss",
     "xdm_ban_egon",
     "xdm_ban_hgrenade",
     "xdm_ban_hornet",
@@ -317,12 +313,12 @@ new const g_vszMpDamageWeapons[SIZE_DAMAGE_WEAPONS][] = {
 };
 
 new const g_vszStartWeaponsDefault[SIZE_WEAPONS][] = {
+    "1", // xdm_start_gauss
     "1", // xdm_start_357
     "1", // xdm_start_mp5
     "1", // xdm_start_glock
     "1", // xdm_start_crossbow
     "1", // xdm_start_crowbar
-    "1", // xdm_start_gauss
     "0", // xdm_start_egon
     "0", // xdm_start_hgrenade
     "0", // xdm_start_hornet
@@ -341,10 +337,6 @@ new const g_vszStartAmmoDefault[SIZE_AMMO][] = {
     "100", // xdm_start_uranium
     "1",   // xdm_start_rockets
     "50",  // xdm_start_bolts
-    "0",   // xdm_start_tripmine
-    "0",   // xdm_start_satchel
-    "0",   // xdm_start_hgrenade
-    "0",   // xdm_start_snark
 };
 
 new const g_vszXdmDamageWeaponsDefault[SIZE_DAMAGE_WEAPONS][] = {
