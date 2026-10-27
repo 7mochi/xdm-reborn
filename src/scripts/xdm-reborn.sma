@@ -75,7 +75,7 @@
 #define UNINITIALIZED_DESTINATION   72769.420
 
 #define PLUGIN                      "XDM Reborn"
-#define VERSION                     "1.0"
+#define VERSION                     "1.0.2"
 #define AUTHOR                      "7mochi"
 
 enum (+=727) {
@@ -150,7 +150,57 @@ new g_cvarSuperJumpHeight;
 new g_cvarTeleportDistance;
 new g_cvarTeleportCooldown;
 
-new const AG_GAMEMODE_FILE[] = "gamemodes/xdm.cfg";
+new g_iStartHP;
+new g_iStartHEV;
+new bool:g_bStartLongJump;
+new bool:g_bBanHealthKit;
+new bool:g_bBanBattery;
+new bool:g_bBanRecharge;
+new bool:g_bBanLongJump;
+new g_iStartWeapons[SIZE_WEAPONS];
+new g_iStartAmmo[SIZE_AMMO];
+new g_iBanWeapons[SIZE_BAN_WEAPONS];
+new g_iBanAmmo[SIZE_AMMO_ENTS];
+new Float:g_fXdmDamageWeapons[SIZE_DAMAGE_WEAPONS];
+
+new Float:g_fReloadSpeed;
+new Float:g_fPlayerSpeed;
+
+new g_iFlyCrowbarSpeed;
+new bool:g_bFlyCrowbarTrail;
+new Float:g_fFlyCrowbarDamage;
+new bool:g_bFlyCrowbarRender;
+new Float:g_fFlyCrowbarLifetime;
+
+new bool:g_bHookEnabled;
+new Float:g_fHookSpeed;
+
+new g_iRune[NUMBER_RUNES];
+new g_iRuneColor[NUMBER_RUNES];
+
+new Float:g_fRegenFrequency;
+new g_iRegenAmountHP;
+new g_iRegenAmountHEV;
+new g_iRegenMaxHP;
+new g_iRegenMaxHEV;
+
+new Float:g_fTrapRadius;
+new Float:g_fTrapDamage;
+new g_iTrapFragBonus;
+
+new g_iCloakValue;
+
+new Float:g_fSuperSpeedVelocity;
+
+new Float:g_fLowGravityValue;
+new Float:g_fNormalGravityValue;
+
+new Float:g_fSuperGlockFireRate;
+
+new Float:g_fSuperJumpHeight;
+
+new Float:g_fTeleportDistance;
+new Float:g_fTeleportCooldown;
 
 new const RUNE_MODEL[] = "models/xdm_rune.mdl";
 new const RUNE_PICKUP_SOUND[] = "xdm.wav";
@@ -266,6 +316,78 @@ new const g_vszMpDamageWeapons[SIZE_DAMAGE_WEAPONS][] = {
     "mp_dmg_m203",
 };
 
+new const g_vszStartWeaponsDefault[SIZE_WEAPONS][] = {
+    "1", // xdm_start_357
+    "1", // xdm_start_mp5
+    "1", // xdm_start_glock
+    "1", // xdm_start_crossbow
+    "1", // xdm_start_crowbar
+    "1", // xdm_start_gauss
+    "0", // xdm_start_egon
+    "0", // xdm_start_hgrenade
+    "0", // xdm_start_hornet
+    "1", // xdm_start_rpg
+    "0", // xdm_start_satchel
+    "1", // xdm_start_shotgun
+    "0", // xdm_start_snark
+    "0", // xdm_start_tripmine
+};
+
+new const g_vszStartAmmoDefault[SIZE_AMMO][] = {
+    "84",  // xdm_start_bockshot
+    "100", // xdm_start_9mmar
+    "2",   // xdm_start_m203
+    "36",  // xdm_start_357ammo
+    "100", // xdm_start_uranium
+    "1",   // xdm_start_rockets
+    "50",  // xdm_start_bolts
+    "0",   // xdm_start_tripmine
+    "0",   // xdm_start_satchel
+    "0",   // xdm_start_hgrenade
+    "0",   // xdm_start_snark
+};
+
+new const g_vszXdmDamageWeaponsDefault[SIZE_DAMAGE_WEAPONS][] = {
+    "30",  // xdm_dmg_crowbar
+    "12",  // xdm_dmg_glock
+    "40",  // xdm_dmg_357
+    "12",  // xdm_dmg_mp5
+    "20",  // xdm_dmg_shotgun
+    "120", // xdm_dmg_bolts_normal
+    "50",  // xdm_dmg_bolts_explosion
+    "120", // xdm_dmg_rpg
+    "20",  // xdm_dmg_gauss
+    "200", // xdm_dmg_gauss_secondary
+    "14",  // xdm_dmg_egon
+    "16",  // xdm_dmg_hornet
+    "100", // xdm_dmg_hgrenade
+    "120", // xdm_dmg_satchel
+    "150", // xdm_dmg_tripmine
+    "100", // xdm_dmg_m203
+};
+
+new const g_vszCvarRuneDefault[NUMBER_RUNES][] = {
+    "2", // xdm_numb_regen_runes
+    "1", // xdm_numb_trap_runes
+    "2", // xdm_numb_cloak_runes
+    "2", // xdm_numb_super_speed_runes
+    "2", // xdm_numb_low_grav_runes
+    "2", // xdm_numb_super_glock_runes
+    "2", // xdm_numb_super_jump_runes
+    "1", // xdm_numb_teleport_runes
+};
+
+new const g_vszCvarRuneColorDefault[NUMBER_RUNES][] = {
+    "7",  // xdm_color_regen_runes
+    "0",  // xdm_color_trap_runes
+    "11", // xdm_color_cloak_runes
+    "3",  // xdm_color_super_speed_runes
+    "4",  // xdm_color_low_grav_runes
+    "1",  // xdm_color_super_glock_runes
+    "15", // xdm_color_super_jump_runes
+    "14", // xdm_color_teleport_runes
+};
+
 new const g_vszWeaponClass[][] = {
     "weapon_gauss",
     "weapon_357",
@@ -365,124 +487,196 @@ new g_iDeathMsg;
 
 public plugin_precache() {
     register_dictionary("xdm-reborn.txt");
-    
-    if (cvar_exists("sv_ag_version")) {
-        g_bIsAGServer = true;
-    }
 
-    if (g_bIsAGServer) {
-        if (!file_exists(AG_GAMEMODE_FILE)) {
-            server_print("%l", "XDM_AG_GAMEMODE_NOT_FOUND");
-            rename_file("xdm_ag.cfg", AG_GAMEMODE_FILE, 1);
-        }
-        
-        new szGameMode[32];
-        get_cvar_string("sv_ag_gamemode", szGameMode, charsmax(szGameMode));
-
-        if (!equal(szGameMode, "xdm")) {
-            server_print("%l", "XDM_AG_CANT_RUN");
-            pause("ad");
-            return;
-        }
-    } else {
-        g_cvarStartHP = create_cvar("xdm_start_hp", "100");
-        g_cvarStartHEV = create_cvar("xdm_start_hev", "0");
-        g_cvarStartLongJump = create_cvar("xdm_start_longjump", "0");
-        
-        for (new i; i < sizeof g_cvarStartWeapons; i++) {
-            g_cvarStartWeapons[i] = create_cvar(g_vszCvarStartWeapons[i], "0");
-        }
-
-        for (new i; i < sizeof g_cvarStartAmmo; i++) {
-            g_cvarStartAmmo[i] = create_cvar(g_vszCvarStartAmmo[i], "0");
-        }
-
-        for (new i; i < sizeof g_cvarBanWeapons; i++) {
-            g_cvarBanWeapons[i] = create_cvar(g_vszCvarBanWeapons[i], "0");
-        }
-
-        for (new i; i < sizeof g_cvarBanAmmo; i++) {
-            g_cvarBanAmmo[i] = create_cvar(g_vszCvarBanAmmo[i], "0");
-        }
-
-        g_cvarBanHealthKit = create_cvar("xdm_ban_health_kit", "0");
-        g_cvarBanBattery = create_cvar("xdm_ban_battery", "0");
-        g_cvarBanRecharge = create_cvar("xdm_ban_recharge", "0");
-        g_cvarBanLongJump = create_cvar("xdm_ban_longjump", "0");
-
-        new szValue[32];
-        for (new i = 0; i < SIZE_DAMAGE_WEAPONS; i++) {
-            g_cvarMpDamageWeapons[i] = get_cvar_pointer(g_vszMpDamageWeapons[i]);
-
-            get_pcvar_string(g_cvarMpDamageWeapons[i], szValue, charsmax(szValue));
-
-            g_cvarXdmDamageWeapons[i] = create_cvar(g_vszXdmDamageWeapons[i], szValue);
-            hook_cvar_change(g_cvarXdmDamageWeapons[i], "hook_cvar_xdm_damage_weapons");
-        }
-    }
-
-    g_cvarReloadSpeed = create_cvar("xdm_reload_speed", "0.5");
-    g_cvarPlayerSpeed = create_cvar("xdm_player_speed", "300.0");
-
-    g_cvarFlyCrowbarSpeed = create_cvar("xdm_flycrowbar_speed", "1300");
-    g_cvarFlyCrowbarTrail = create_cvar("xdm_flycrowbar_trail", "1");
-    g_cvarFlyCrowbarDamage = create_cvar("xdm_flycrowbar_damage", "240.0");
-    g_cvarFlyCrowbarRender = create_cvar("xdm_flycrowbar_render", "1");
-    g_cvarFlyCrowbarLifetime = create_cvar("xdm_flycrowbar_lifetime", "15.0");
-
-    g_cvarHookEnabled = create_cvar("xdm_hook_enabled", "1");
-    g_cvarHookSpeed = create_cvar("xdm_hook_speed", "5");
-
-    for (new i; i < sizeof g_cvarRune; i++) {
-        g_cvarRune[i] = create_cvar(g_vszCvarRuneNames[i], "1");
-        g_cvarRuneColor[i] = create_cvar(g_vszCvarRuneColorNames[i], "0");
-    }
-
-    g_cvarRegenFrequency = create_cvar("xdm_regen_frequency", "1.0");
-    g_cvarRegenAmountHP = create_cvar("xdm_regen_amount_hp", "1");
-    g_cvarRegenAmountHEV = create_cvar("xdm_regen_amount_hev", "1");
-    g_cvarRegenMaxHP = create_cvar("xdm_regen_max_hp", "100");
-    g_cvarRegenMaxHEV = create_cvar("xdm_regen_max_hev", "100");
-
-    g_cvarTrapRadius = create_cvar("xdm_trap_radius", "500.0");
-    g_cvarTrapDamage = create_cvar("xdm_trap_damage", "1000.0");
-    g_cvarTrapFragBonus = create_cvar("xdm_trap_frag_bonus", "1");
-
-    g_cvarCloakValue = create_cvar("xdm_cloak_value", "80");
-
-    g_cvarSuperSpeedVelocity = create_cvar("xdm_super_speed_velocity", "600.0");
-
-    g_cvarLowGravityValue = create_cvar("xdm_low_gravity_value", "400");
-    g_cvarNormalGravityValue = get_cvar_pointer("sv_gravity");
-
-    g_cvarSuperGlockFireRate = create_cvar("xdm_super_glock_fire_rate", "9999.0");
-
-    g_cvarSuperJumpHeight = create_cvar("xdm_super_jump_height", "550.0");
-
-    g_cvarTeleportDistance = create_cvar("xdm_teleport_distance", "100.0");
-    g_cvarTeleportCooldown = create_cvar("xdm_teleport_cooldown", "15.0");
-    
     precache_model(RUNE_MODEL);
     g_iTrailSprite = precache_model(FLY_CROWBAR_TRAIL_SPRITE);
     g_iBloodSprite = precache_model(FLY_CROWBAR_BLOOD_SPRITE);
     g_iBloodSpraySprite = precache_model(FLY_CROWBAR_BLOODSPRAY_SPRITE);
     g_iBeamSprite = precache_model(HOOK_BEAM_SPRITE);
     g_iCylinderSprite = precache_model(RUNE_TRAP_SHOCKWAVE_SPRITE);
-    
+
     precache_sound(RUNE_PICKUP_SOUND);
     precache_sound(HOOK_HIT_SOUND);
     precache_sound(RUNE_TRAP_SHOCKWAVE_SOUND);
 
     g_iDeathMsg = get_user_msgid("DeathMsg");
+}
+
+public register_cvars() {
+    new szDescription[96];
 
     if (!g_bIsAGServer) {
-        server_cmd("exec xdm.cfg");
-        server_exec();
+        g_cvarStartHP = create_cvar("xdm_start_hp", "100", FCVAR_NONE, "Health the player starts with.", true, 0.0, true, 1000.0);
+        g_cvarStartHEV = create_cvar("xdm_start_hev", "50", FCVAR_NONE, "Armor the player starts with.", true, 0.0, true, 1000.0);
+        g_cvarStartLongJump = create_cvar("xdm_start_longjump", "1", FCVAR_NONE, "Whether the player starts with the long jump module.", true, 0.0, true, 1.0);
+
+        for (new i; i < sizeof g_cvarStartWeapons; i++) {
+            formatex(szDescription, charsmax(szDescription), "Whether the player starts with %s.", g_vszCvarStartWeapons[i]);
+            g_cvarStartWeapons[i] = create_cvar(g_vszCvarStartWeapons[i], g_vszStartWeaponsDefault[i], FCVAR_NONE, szDescription, true, 0.0, true, 1.0);
+        }
+
+        for (new i; i < sizeof g_cvarStartAmmo; i++) {
+            formatex(szDescription, charsmax(szDescription), "Amount of ammo the player starts with for %s.", g_vszCvarStartAmmo[i]);
+            g_cvarStartAmmo[i] = create_cvar(g_vszCvarStartAmmo[i], g_vszStartAmmoDefault[i], FCVAR_NONE, szDescription, true, 0.0, true, 999.0);
+        }
+
+        for (new i; i < sizeof g_cvarBanWeapons; i++) {
+            formatex(szDescription, charsmax(szDescription), "Whether %s entities are banned.", g_vszCvarBanWeapons[i]);
+            g_cvarBanWeapons[i] = create_cvar(g_vszCvarBanWeapons[i], "0", FCVAR_NONE, szDescription, true, 0.0, true, 1.0);
+        }
+
+        for (new i; i < sizeof g_cvarBanAmmo; i++) {
+            formatex(szDescription, charsmax(szDescription), "Whether %s entities are banned.", g_vszCvarBanAmmo[i]);
+            g_cvarBanAmmo[i] = create_cvar(g_vszCvarBanAmmo[i], "0", FCVAR_NONE, szDescription, true, 0.0, true, 1.0);
+        }
+
+        g_cvarBanHealthKit = create_cvar("xdm_ban_health_kit", "0", FCVAR_NONE, "Whether health kit entities are banned.", true, 0.0, true, 1.0);
+        g_cvarBanBattery = create_cvar("xdm_ban_battery", "0", FCVAR_NONE, "Whether battery entities are banned.", true, 0.0, true, 1.0);
+        g_cvarBanRecharge = create_cvar("xdm_ban_recharge", "0", FCVAR_NONE, "Whether health and HEV chargers are banned.", true, 0.0, true, 1.0);
+        g_cvarBanLongJump = create_cvar("xdm_ban_longjump", "0", FCVAR_NONE, "Whether long jump module entities are banned.", true, 0.0, true, 1.0);
+
+        for (new i = 0; i < SIZE_DAMAGE_WEAPONS; i++) {
+            g_cvarMpDamageWeapons[i] = get_cvar_pointer(g_vszMpDamageWeapons[i]);
+
+            formatex(szDescription, charsmax(szDescription), "Damage dealt by %s.", g_vszXdmDamageWeapons[i]);
+            g_cvarXdmDamageWeapons[i] = create_cvar(g_vszXdmDamageWeapons[i], g_vszXdmDamageWeaponsDefault[i], FCVAR_NONE, szDescription, true, 0.0, true, 10000.0);
+            hook_cvar_change(g_cvarXdmDamageWeapons[i], "hook_cvar_xdm_damage_weapons");
+        }
     }
+
+    g_cvarReloadSpeed = create_cvar("xdm_reload_speed", "0.5", FCVAR_NONE, "Multiplier applied to weapon reload time. Lower is faster.", true, 0.01, true, 10.0);
+    g_cvarPlayerSpeed = create_cvar("xdm_player_speed", "300.0", FCVAR_NONE, "Maximum speed of the player.", true, 0.0, true, 3000.0);
+
+    g_cvarFlyCrowbarSpeed = create_cvar("xdm_flycrowbar_speed", "1500", FCVAR_NONE, "Speed of the flying crowbar.", true, 0.0, true, 10000.0);
+    g_cvarFlyCrowbarTrail = create_cvar("xdm_flycrowbar_trail", "1", FCVAR_NONE, "Whether the flying crowbar has a trail.", true, 0.0, true, 1.0);
+    g_cvarFlyCrowbarDamage = create_cvar("xdm_flycrowbar_damage", "500.0", FCVAR_NONE, "Damage dealt by the flying crowbar.", true, 0.0, true, 10000.0);
+    g_cvarFlyCrowbarRender = create_cvar("xdm_flycrowbar_render", "1", FCVAR_NONE, "Whether the dropped crowbar glows.", true, 0.0, true, 1.0);
+    g_cvarFlyCrowbarLifetime = create_cvar("xdm_flycrowbar_lifetime", "15.0", FCVAR_NONE, "Time before a dropped crowbar is removed.", true, 0.0, true, 600.0);
+
+    g_cvarHookEnabled = create_cvar("xdm_hook_enabled", "1", FCVAR_NONE, "Whether the grappling hook is enabled.", true, 0.0, true, 1.0);
+    g_cvarHookSpeed = create_cvar("xdm_hook_speed", "7.0", FCVAR_NONE, "Speed of the grappling hook.", true, 0.0, true, 100.0);
+
+    for (new i; i < sizeof g_cvarRune; i++) {
+        formatex(szDescription, charsmax(szDescription), "Number of %s to spawn on the map.", g_vszCvarRuneNames[i]);
+        g_cvarRune[i] = create_cvar(g_vszCvarRuneNames[i], g_vszCvarRuneDefault[i], FCVAR_NONE, szDescription, true, 0.0, true, 64.0);
+
+        formatex(szDescription, charsmax(szDescription), "Color skin of %s.", g_vszCvarRuneColorNames[i]);
+        g_cvarRuneColor[i] = create_cvar(g_vszCvarRuneColorNames[i], g_vszCvarRuneColorDefault[i], FCVAR_NONE, szDescription, true, 0.0, true, 15.0);
+    }
+
+    g_cvarRegenFrequency = create_cvar("xdm_regen_frequency", "1.0", FCVAR_NONE, "Seconds between regeneration ticks.", true, 0.01, true, 60.0);
+    g_cvarRegenAmountHP = create_cvar("xdm_regen_amount_hp", "3", FCVAR_NONE, "Health restored per regeneration tick.", true, 0.0, true, 1000.0);
+    g_cvarRegenAmountHEV = create_cvar("xdm_regen_amount_hev", "2", FCVAR_NONE, "Armor restored per regeneration tick.", true, 0.0, true, 1000.0);
+    g_cvarRegenMaxHP = create_cvar("xdm_regen_max_hp", "100", FCVAR_NONE, "Maximum health the regeneration rune can restore.", true, 0.0, true, 1000.0);
+    g_cvarRegenMaxHEV = create_cvar("xdm_regen_max_hev", "100", FCVAR_NONE, "Maximum armor the regeneration rune can restore.", true, 0.0, true, 1000.0);
+
+    g_cvarTrapRadius = create_cvar("xdm_trap_radius", "500.0", FCVAR_NONE, "Radius of the trap rune explosion.", true, 0.0, true, 10000.0);
+    g_cvarTrapDamage = create_cvar("xdm_trap_damage", "1000.0", FCVAR_NONE, "Damage of the trap rune explosion.", true, 0.0, true, 100000.0);
+    g_cvarTrapFragBonus = create_cvar("xdm_trap_frag_bonus", "1", FCVAR_NONE, "Extra frags awarded for a trap rune kill.", true, 0.0, true, 100.0);
+
+    g_cvarCloakValue = create_cvar("xdm_cloak_value", "80", FCVAR_NONE, "Alpha value of the cloak rune.", true, 0.0, true, 255.0);
+
+    g_cvarSuperSpeedVelocity = create_cvar("xdm_super_speed_velocity", "600.0", FCVAR_NONE, "Maximum speed granted by the super speed rune.", true, 0.0, true, 3000.0);
+
+    g_cvarLowGravityValue = create_cvar("xdm_low_gravity_value", "400", FCVAR_NONE, "Gravity value applied by the low gravity rune.", true, 0.0, true, 800.0);
+    g_cvarNormalGravityValue = get_cvar_pointer("sv_gravity");
+
+    g_cvarSuperGlockFireRate = create_cvar("xdm_super_glock_fire_rate", "9999.0", FCVAR_NONE, "Secondary fire rate of the super glock rune.", true, 0.0, true, 100000.0);
+
+    g_cvarSuperJumpHeight = create_cvar("xdm_super_jump_height", "550.0", FCVAR_NONE, "Jump velocity granted by the super jump rune.", true, 0.0, true, 2000.0);
+
+    g_cvarTeleportDistance = create_cvar("xdm_teleport_distance", "100.0", FCVAR_NONE, "Distance used by the teleport rune.", true, 0.0, true, 5000.0);
+    g_cvarTeleportCooldown = create_cvar("xdm_teleport_cooldown", "15.0", FCVAR_NONE, "Cooldown of the teleport rune.", true, 0.0, true, 600.0);
+}
+
+public bind_cvars() {
+    bind_pcvar_float(g_cvarNormalGravityValue, g_fNormalGravityValue);
+
+    if (!g_bIsAGServer) {
+        bind_pcvar_num(g_cvarStartHP, g_iStartHP);
+        bind_pcvar_num(g_cvarStartHEV, g_iStartHEV);
+        bind_pcvar_num(g_cvarStartLongJump, g_bStartLongJump);
+
+        for (new i; i < sizeof g_cvarStartWeapons; i++) {
+            bind_pcvar_num(g_cvarStartWeapons[i], g_iStartWeapons[i]);
+        }
+
+        for (new i; i < sizeof g_cvarStartAmmo; i++) {
+            bind_pcvar_num(g_cvarStartAmmo[i], g_iStartAmmo[i]);
+        }
+
+        for (new i; i < sizeof g_cvarBanWeapons; i++) {
+            bind_pcvar_num(g_cvarBanWeapons[i], g_iBanWeapons[i]);
+        }
+
+        for (new i; i < sizeof g_cvarBanAmmo; i++) {
+            bind_pcvar_num(g_cvarBanAmmo[i], g_iBanAmmo[i]);
+        }
+
+        bind_pcvar_num(g_cvarBanHealthKit, g_bBanHealthKit);
+        bind_pcvar_num(g_cvarBanBattery, g_bBanBattery);
+        bind_pcvar_num(g_cvarBanRecharge, g_bBanRecharge);
+        bind_pcvar_num(g_cvarBanLongJump, g_bBanLongJump);
+
+        for (new i = 0; i < SIZE_DAMAGE_WEAPONS; i++) {
+            bind_pcvar_float(g_cvarXdmDamageWeapons[i], g_fXdmDamageWeapons[i]);
+
+            if (g_cvarMpDamageWeapons[i]) {
+                set_pcvar_float(g_cvarMpDamageWeapons[i], g_fXdmDamageWeapons[i]);
+            }
+        }
+    }
+
+    bind_pcvar_float(g_cvarReloadSpeed, g_fReloadSpeed);
+    bind_pcvar_float(g_cvarPlayerSpeed, g_fPlayerSpeed);
+
+    bind_pcvar_num(g_cvarFlyCrowbarSpeed, g_iFlyCrowbarSpeed);
+    bind_pcvar_num(g_cvarFlyCrowbarTrail, g_bFlyCrowbarTrail);
+    bind_pcvar_float(g_cvarFlyCrowbarDamage, g_fFlyCrowbarDamage);
+    bind_pcvar_num(g_cvarFlyCrowbarRender, g_bFlyCrowbarRender);
+    bind_pcvar_float(g_cvarFlyCrowbarLifetime, g_fFlyCrowbarLifetime);
+
+    bind_pcvar_num(g_cvarHookEnabled, g_bHookEnabled);
+    bind_pcvar_float(g_cvarHookSpeed, g_fHookSpeed);
+
+    for (new i; i < sizeof g_cvarRune; i++) {
+        bind_pcvar_num(g_cvarRune[i], g_iRune[i]);
+        bind_pcvar_num(g_cvarRuneColor[i], g_iRuneColor[i]);
+    }
+
+    bind_pcvar_float(g_cvarRegenFrequency, g_fRegenFrequency);
+    bind_pcvar_num(g_cvarRegenAmountHP, g_iRegenAmountHP);
+    bind_pcvar_num(g_cvarRegenAmountHEV, g_iRegenAmountHEV);
+    bind_pcvar_num(g_cvarRegenMaxHP, g_iRegenMaxHP);
+    bind_pcvar_num(g_cvarRegenMaxHEV, g_iRegenMaxHEV);
+
+    bind_pcvar_float(g_cvarTrapRadius, g_fTrapRadius);
+    bind_pcvar_float(g_cvarTrapDamage, g_fTrapDamage);
+    bind_pcvar_num(g_cvarTrapFragBonus, g_iTrapFragBonus);
+
+    bind_pcvar_num(g_cvarCloakValue, g_iCloakValue);
+
+    bind_pcvar_float(g_cvarSuperSpeedVelocity, g_fSuperSpeedVelocity);
+
+    bind_pcvar_float(g_cvarLowGravityValue, g_fLowGravityValue);
+
+    bind_pcvar_float(g_cvarSuperGlockFireRate, g_fSuperGlockFireRate);
+
+    bind_pcvar_float(g_cvarSuperJumpHeight, g_fSuperJumpHeight);
+
+    bind_pcvar_float(g_cvarTeleportDistance, g_fTeleportDistance);
+    bind_pcvar_float(g_cvarTeleportCooldown, g_fTeleportCooldown);
 }
 
 public plugin_init() {
     register_plugin(PLUGIN, VERSION, AUTHOR);
+
+    g_bIsAGServer = cvar_exists("sv_ag_version") ? true : false;
+
+    register_cvars();
+
+    AutoExecConfig();
+
     register_forward(FM_GetGameDescription, "fwd_game_description");
     
     register_clcmd("spectate", "cmd_spectate");
@@ -526,26 +720,28 @@ public plugin_init() {
     RegisterHam(Ham_Use, "func_recharge", "fwd_use_hev_charger_post", 1);
 
     g_iHudDisplayRuneDetails = CreateHudSyncObj();
+}
+
+public OnConfigsExecuted() {
+    bind_cvars();
 
     if (!g_bIsAGServer) {
         remove_banned_entities();
     }
-}
 
-public plugin_cfg() {
-    set_cvar_float("sv_maxspeed", get_pcvar_float(g_cvarSuperSpeedVelocity));
+    set_cvar_float("sv_maxspeed", g_fSuperSpeedVelocity);
 
     g_bGamePlayerEquipExists = find_game_player_equip() ? true : false;
     
     ROGInitialize(200.0);
 
     for (new i; i < sizeof g_cvarRune; i++) {
-        for (new j; j < get_pcvar_num(g_cvarRune[i]); j++) {
+        for (new j; j < g_iRune[i]; j++) {
             spawn_rune(i + 1);
         }
     }
 
-    ROGInitialize(get_pcvar_float(g_cvarTeleportDistance));
+    ROGInitialize(g_fTeleportDistance);
 }
 
 public client_disconnected(iPlayer) {
@@ -576,7 +772,7 @@ public cmd_droprune(iPlayer) {
 }
 
 public cmd_hook_enable(iPlayer) {
-    if (!get_pcvar_num(g_cvarHookEnabled) || g_vbHook[iPlayer]) return PLUGIN_HANDLED;
+    if (!g_bHookEnabled || g_vbHook[iPlayer]) return PLUGIN_HANDLED;
 
     set_user_gravity(iPlayer, 0.0);
     set_task(0.1, "hook_think", iPlayer + TASK_HOOK_THINK, "", 0, "b");
@@ -595,7 +791,7 @@ public cmd_hook_disable(iPlayer) {
         if (g_iPlayerHasRune[iPlayer] == RUNE_LOW_GRAVITY) {
             rune_low_gravity(iPlayer);
         } else {
-            set_user_gravity(iPlayer, get_pcvar_float(g_cvarNormalGravityValue) / 800.0);
+            set_user_gravity(iPlayer, g_fNormalGravityValue / 800.0);
         }
     }
 
@@ -650,7 +846,7 @@ public hook_think(iTask) {
 
     static Float:xCoord, Float:yCoord;
     yCoord = floatpower(vfVelocity[0], 2.0) + floatpower(vfVelocity[1], 2.0) + floatpower(vfVelocity[2], 2.0);
-    xCoord = (get_pcvar_float(g_cvarHookSpeed) * 120.0) / floatsqroot(yCoord);
+    xCoord = (g_fHookSpeed * 120.0) / floatsqroot(yCoord);
 
     vfVelocity[0] *= xCoord;
     vfVelocity[1] *= xCoord;
@@ -662,48 +858,48 @@ public hook_think(iTask) {
 }
 
 public set_initial_equipment(iPlayer) {
-    hl_set_user_health(iPlayer, get_pcvar_num(g_cvarStartHP));
-    hl_set_user_armor(iPlayer, get_pcvar_num(g_cvarStartHEV));
+    hl_set_user_health(iPlayer, g_iStartHP);
+    hl_set_user_armor(iPlayer, g_iStartHEV);
 
-    if (get_pcvar_bool(g_cvarStartLongJump)) {
+    if (g_bStartLongJump) {
         hl_set_user_longjump(iPlayer, true);
     }
     
     for (new i; i < SIZE_WEAPONS; i++) {
-        if (get_pcvar_num(g_cvarStartWeapons[i])) {
+        if (g_iStartWeapons[i]) {
             give_item(iPlayer, g_vszWeaponClass[i]);
         }
     }
 
     for (new i; i < SIZE_AMMO; i++) {
-        if (get_pcvar_num(g_cvarStartAmmo[i]) != 0) {
-            set_ent_data(iPlayer, "CBasePlayer", "m_rgAmmo", get_pcvar_num(g_cvarStartAmmo[i]), i + 1);
+        if (g_iStartAmmo[i] != 0) {
+            set_ent_data(iPlayer, "CBasePlayer", "m_rgAmmo", g_iStartAmmo[i], i + 1);
         }
     }
 }
 
 public remove_banned_entities() {
     for (new i; i < SIZE_BAN_WEAPONS; i++) {
-        if (get_pcvar_num(g_cvarBanWeapons[i])) {
+        if (g_iBanWeapons[i]) {
             remove_entity_name(g_vszWeaponClass[i]);
         }
     }
 
     for (new i; i < SIZE_AMMO_ENTS; i++) {
-        if (get_pcvar_num(g_cvarBanAmmo[i])) {
+        if (g_iBanAmmo[i]) {
             remove_entity_name(g_vszAmmoClass[i]);
         }
     }
 
-    if (get_pcvar_num(g_cvarBanHealthKit)) {
+    if (g_bBanHealthKit) {
         remove_entity_name("item_healthkit");
     }
 
-    if (get_pcvar_num(g_cvarBanBattery)) {
+    if (g_bBanBattery) {
         remove_entity_name("item_battery");
     }
 
-    if (get_pcvar_num(g_cvarBanLongJump)) {
+    if (g_bBanLongJump) {
         remove_entity_name("item_longjump");
     }
 }
@@ -711,7 +907,10 @@ public remove_banned_entities() {
 public hook_cvar_xdm_damage_weapons(pcvar, const szOldValue[], const szNewValue[]) {
     for (new i; i < sizeof g_cvarXdmDamageWeapons; i++) {
         if (g_cvarXdmDamageWeapons[i] == pcvar) {
-            set_pcvar_string(g_cvarMpDamageWeapons[i], szNewValue);
+            if (g_cvarMpDamageWeapons[i]) {
+                set_pcvar_string(g_cvarMpDamageWeapons[i], szNewValue);
+            }
+
             return;
         }
     }
@@ -731,7 +930,7 @@ public fwd_player_killed(iVictim, iAttacker) {
 
 public fwd_player_spawn_post(iPlayer) {
     if (is_user_alive(iPlayer)) {
-        set_user_maxspeed(iPlayer, get_pcvar_float(g_cvarPlayerSpeed));
+        set_user_maxspeed(iPlayer, g_fPlayerSpeed);
 
         if (!g_bGamePlayerEquipExists && !g_bIsAGServer) {
             hl_strip_user_weapon(iPlayer, HLW_GLOCK);
@@ -742,7 +941,7 @@ public fwd_player_spawn_post(iPlayer) {
 }
 
 public fwd_use_charger_pre(iEntity, iPlayer) {
-    if (get_pcvar_bool(g_cvarBanRecharge)) return HAM_SUPERCEDE;
+    if (g_bBanRecharge) return HAM_SUPERCEDE;
 
     g_iJuice = get_ent_data(iEntity, "CRecharge", "m_iJuice");
 
@@ -750,7 +949,7 @@ public fwd_use_charger_pre(iEntity, iPlayer) {
 }
 
 public fwd_use_hp_charger_post(iEntity, iPlayer) {
-    if (get_pcvar_bool(g_cvarBanRecharge)) return HAM_SUPERCEDE;
+    if (g_bBanRecharge) return HAM_SUPERCEDE;
     
     new iJuicePost = get_ent_data(iEntity, "CRecharge", "m_iJuice");
     if (g_iJuice != iJuicePost) {
@@ -762,7 +961,7 @@ public fwd_use_hp_charger_post(iEntity, iPlayer) {
 }
 
 public fwd_use_hev_charger_post(iEntity, iPlayer) {
-    if (get_pcvar_bool(g_cvarBanRecharge)) return HAM_SUPERCEDE;
+    if (g_bBanRecharge) return HAM_SUPERCEDE;
     
     new iJuicePost = get_ent_data(iEntity, "CRecharge", "m_iJuice");
     if (g_iJuice != iJuicePost) {
@@ -791,9 +990,9 @@ public fwd_pickup_rune(iRune, iPlayer) {
 
         switch (g_iPlayerHasRune[iPlayer]) {
             case RUNE_REGEN:
-                set_task(get_pcvar_float(g_cvarRegenFrequency), "rune_regeneration", iPlayer + TASK_REGENERATION, _, _, "b");
+                set_task(g_fRegenFrequency, "rune_regeneration", iPlayer + TASK_REGENERATION, _, _, "b");
             case RUNE_CLOAK:
-                rune_cloak(iPlayer, get_pcvar_num(g_cvarCloakValue));
+                rune_cloak(iPlayer, g_iCloakValue);
             case RUNE_SUPER_SPEED:
                 rune_super_speed(iPlayer);
             case RUNE_LOW_GRAVITY:
@@ -812,7 +1011,7 @@ public fwd_weapons_custom_reload_rate(iWeapon) {
         new iPlayer = get_ent_data_entity(iWeapon, "CBasePlayerItem", "m_pPlayer");
 
         new Float:fNextAttack = get_ent_data_float(iPlayer, "CBaseMonster", "m_flNextAttack") *
-                                get_pcvar_float(g_cvarReloadSpeed);
+                                g_fReloadSpeed;
         set_ent_data_float(iPlayer, "CBaseMonster", "m_flNextAttack", fNextAttack);
     }
 }
@@ -829,7 +1028,7 @@ public fwd_shotgun_custom_reload_rate_post(iShotgun) {
         case 0:
             if (get_ent_data(iShotgun, "CBasePlayerWeapon", "m_fInSpecialReload") == 1) {
                 new Float:fNextAttack = get_ent_data_float(iPlayer, "CBaseMonster", "m_flNextAttack") *
-                                        get_pcvar_float(g_cvarReloadSpeed);
+                                        g_fReloadSpeed;
                 set_ent_data_float(iPlayer, "CBaseMonster", "m_flNextAttack", fNextAttack);
                 set_ent_data_float(iShotgun, "CBasePlayerWeapon", "m_flTimeWeaponIdle", 0.1);
                 set_ent_data_float(iShotgun, "CBasePlayerWeapon", "m_flNextPrimaryAttack", 0.6);
@@ -919,7 +1118,7 @@ public fwd_glock_primary_attack_post(iGlock) {
     new iPlayer = get_ent_data_entity(iGlock, "CBasePlayerItem", "m_pPlayer");
 
     if (g_iPlayerHasRune[iPlayer] == RUNE_SUPER_GLOCK) {
-        set_ent_data_float(iGlock, "CBasePlayerWeapon", "m_flNextSecondaryAttack", get_pcvar_float(g_cvarSuperGlockFireRate));
+        set_ent_data_float(iGlock, "CBasePlayerWeapon", "m_flNextSecondaryAttack", g_fSuperGlockFireRate);
 
         if (g_iOldClip[iPlayer] <= 0) return;
 
@@ -945,7 +1144,7 @@ public spawn_fly_crowbar(iPlayer) {
         vfAngles[0] = 90.0;
         vfAngles[2] = floatadd(vfAngles[2], -90.0);
 
-        velocity_by_aim(iPlayer, get_pcvar_num(g_cvarFlyCrowbarSpeed) + get_speed(iPlayer), vfVelocity);
+        velocity_by_aim(iPlayer, g_iFlyCrowbarSpeed + get_speed(iPlayer), vfVelocity);
         
         entity_set_string(iCrowbar, EV_SZ_classname, FLY_CROWBAR_CLASSNAME);
         entity_set_model(iCrowbar, "models/w_crowbar.mdl");
@@ -958,7 +1157,7 @@ public spawn_fly_crowbar(iPlayer) {
         entity_set_int(iCrowbar, EV_INT_movetype, MOVETYPE_TOSS);
         entity_set_int(iCrowbar, EV_INT_solid, SOLID_BBOX);
 
-        if (get_pcvar_num(g_cvarFlyCrowbarTrail)) {
+        if (g_bFlyCrowbarTrail) {
             message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
             write_byte(TE_BEAMFOLLOW);
             write_short(iCrowbar);
@@ -1011,7 +1210,7 @@ public fwd_fly_crowbar_impact(iToucher, iTouched) {
         message_end();
     } else {
         emit_sound(iTouched, CHAN_WEAPON, "weapons/cbar_hitbod1.wav", 0.9, ATTN_NORM, 0, PITCH_NORM);
-        ExecuteHamB(Ham_TakeDamage, iTouched, iToucher, entity_get_edict(iToucher, EV_ENT_owner), get_pcvar_float(g_cvarFlyCrowbarDamage), DMG_CLUB);
+        ExecuteHamB(Ham_TakeDamage, iTouched, iToucher, entity_get_edict(iToucher, EV_ENT_owner), g_fFlyCrowbarDamage, DMG_CLUB);
         
         engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, vfOrigin, 0);
         write_byte(TE_BLOODSPRITE);
@@ -1038,11 +1237,11 @@ public fwd_fly_crowbar_impact(iToucher, iTouched) {
     entity_set_vector(iCrowbar, EV_VEC_origin, vfOrigin);
     entity_set_vector(iCrowbar, EV_VEC_angles, vfAngles);
 
-    if (get_pcvar_num(g_cvarFlyCrowbarRender)) {
+    if (g_bFlyCrowbarRender) {
         fm_set_rendering(iCrowbar, kRenderFxGlowShell, 55 + random(200), 55 + random(200), 55 + random(200), kRenderNormal);
     }
 
-    set_task(get_pcvar_float(g_cvarFlyCrowbarLifetime), "fly_crowbar_lifetime", iCrowbar);
+    set_task(g_fFlyCrowbarLifetime, "fly_crowbar_lifetime", iCrowbar);
 }
 
 public fly_crowbar_lifetime(iCrowbar) {
@@ -1062,7 +1261,7 @@ public spawn_rune(iRuneType) {
         entity_set_float(iRune, EV_FL_framerate, 1.0);
         entity_set_int(iRune, EV_INT_solid, SOLID_TRIGGER);
         entity_set_vector(iRune, EV_VEC_origin, vfOrigin);
-        entity_set_int(iRune, EV_INT_skin, get_pcvar_num(g_cvarRuneColor[iRuneType - 1]));
+        entity_set_int(iRune, EV_INT_skin, g_iRuneColor[iRuneType - 1]);
         entity_set_int(iRune, EV_INT_iuser1, iRuneType);
         drop_to_floor(iRune);
     }
@@ -1087,7 +1286,7 @@ public drop_rune(iPlayer) {
             entity_set_float(iRune, EV_FL_framerate, 1.0);
             entity_set_int(iRune, EV_INT_solid, SOLID_TRIGGER);
             entity_set_origin(iRune, vfPlayerOrigin);
-            entity_set_int(iRune, EV_INT_skin, get_pcvar_num(g_cvarRuneColor[g_iPlayerHasRune[iPlayer] - 1]));
+            entity_set_int(iRune, EV_INT_skin, g_iRuneColor[g_iPlayerHasRune[iPlayer] - 1]);
             entity_set_int(iRune, EV_INT_iuser1, g_iPlayerHasRune[iPlayer]);
             entity_set_vector(iRune, EV_VEC_angles, vfPlayerAngles);
             entity_set_vector(iRune, EV_VEC_velocity, vfPlayerVelocity);
@@ -1132,15 +1331,15 @@ public rune_regeneration(iTask) {
     new iPlayer = iTask - TASK_REGENERATION;
 
     if (is_user_alive(iPlayer)) {
-        hl_set_user_health(iPlayer, hl_get_user_health(iPlayer) + get_pcvar_num(g_cvarRegenAmountHP));
-        hl_set_user_armor(iPlayer, hl_get_user_armor(iPlayer) + get_pcvar_num(g_cvarRegenAmountHEV));
+        hl_set_user_health(iPlayer, hl_get_user_health(iPlayer) + g_iRegenAmountHP);
+        hl_set_user_armor(iPlayer, hl_get_user_armor(iPlayer) + g_iRegenAmountHEV);
 
-        if (hl_get_user_health(iPlayer) >= get_pcvar_num(g_cvarRegenMaxHP)) {
-            hl_set_user_health(iPlayer, get_pcvar_num(g_cvarRegenMaxHP));
+        if (hl_get_user_health(iPlayer) >= g_iRegenMaxHP) {
+            hl_set_user_health(iPlayer, g_iRegenMaxHP);
         }
 
-        if (get_user_armor(iPlayer) >= get_pcvar_num(g_cvarRegenMaxHEV)) {
-            hl_set_user_armor(iPlayer, get_pcvar_num(g_cvarRegenMaxHEV));
+        if (get_user_armor(iPlayer) >= g_iRegenMaxHEV) {
+            hl_set_user_armor(iPlayer, g_iRegenMaxHEV);
         }
     }
 }
@@ -1158,11 +1357,11 @@ public rune_trap(iVictim, iAttacker) {
     new viVictimOrigin[3];
     get_user_origin(iVictim, viVictimOrigin);
     
-    new Float:fRadius = get_pcvar_float(g_cvarTrapRadius);
+    new Float:fRadius = g_fTrapRadius;
     create_beam_cylinder(viVictimOrigin, 120.0, g_iCylinderSprite, 0, 0, 6, 16, 0, random(255), random(255), random(255), 255, 0);
     create_beam_cylinder(viVictimOrigin, 320.0, g_iCylinderSprite, 0, 0, 6, 16, 0, random(255), random(255), random(255), 255, 0);
     create_beam_cylinder(viVictimOrigin, fRadius, g_iCylinderSprite, 0, 0, 6, 16, 0, random(255), random(255), random(255), 255, 0);
-    create_explosion(iVictim, iAttacker, get_pcvar_float(g_cvarTrapDamage), fRadius);
+    create_explosion(iVictim, iAttacker, g_fTrapDamage, fRadius);
     emit_sound(iVictim, CHAN_BODY, RUNE_TRAP_SHOCKWAVE_SOUND, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 
     return PLUGIN_HANDLED;
@@ -1177,19 +1376,19 @@ public remove_cloak(iPlayer) {
 }
 
 public rune_super_speed(iPlayer) {
-    entity_set_float(iPlayer, EV_FL_maxspeed, get_pcvar_float(g_cvarSuperSpeedVelocity));
+    entity_set_float(iPlayer, EV_FL_maxspeed, g_fSuperSpeedVelocity);
 }
 
 public remove_super_speed(iPlayer) {
-    entity_set_float(iPlayer, EV_FL_maxspeed, get_pcvar_float(g_cvarPlayerSpeed));
+    entity_set_float(iPlayer, EV_FL_maxspeed, g_fPlayerSpeed);
 }
 
 public rune_low_gravity(iPlayer) {
-    set_user_gravity(iPlayer, get_pcvar_float(g_cvarLowGravityValue) / 800.0);
+    set_user_gravity(iPlayer, g_fLowGravityValue / 800.0);
 }
 
 public remove_low_gravity(iPlayer) {
-    set_user_gravity(iPlayer, get_pcvar_float(g_cvarNormalGravityValue) / 800.0);
+    set_user_gravity(iPlayer, g_fNormalGravityValue / 800.0);
 }
 
 public rune_super_jump(iPlayer) {
@@ -1197,7 +1396,7 @@ public rune_super_jump(iPlayer) {
         new Float:vfVelocity[3];
         entity_get_vector(iPlayer, EV_VEC_velocity, vfVelocity);
 
-        vfVelocity[2] = get_pcvar_float(g_cvarSuperJumpHeight);
+        vfVelocity[2] = g_fSuperJumpHeight;
         entity_set_vector(iPlayer, EV_VEC_velocity, vfVelocity);
 
         return PLUGIN_HANDLED;
@@ -1207,7 +1406,7 @@ public rune_super_jump(iPlayer) {
 }
 
 public rune_teleport(iPlayer) {
-    new Float:fCooldownTime = get_pcvar_float(g_cvarTeleportCooldown);
+    new Float:fCooldownTime = g_fTeleportCooldown;
     new Float:fElapsedTime = get_gametime() - g_vfTeleportLastUsed[iPlayer];
 
     if (fElapsedTime < fCooldownTime) {
@@ -1269,7 +1468,7 @@ public create_explosion(iVictim, iAttacker, Float:fDamage, Float:fRange) {
                 message_end();
 
                 if (iVictim != iAttacker) {
-                    set_user_frags(iVictim, get_user_frags(iVictim) + get_pcvar_num(g_cvarTrapFragBonus));
+                    set_user_frags(iVictim, get_user_frags(iVictim) + g_iTrapFragBonus);
                 }
             }
         }
