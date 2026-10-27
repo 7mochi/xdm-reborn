@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "amxxpack": "^1.5.3"
+  },
+  "dependencies": {
+    "rimraf": "^6.1.3"
   }
 }
