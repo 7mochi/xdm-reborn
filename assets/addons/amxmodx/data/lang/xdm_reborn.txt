@@ -1,0 +1,47 @@
+[en]
+XDM_RUNE_REGENERATION_NAME = Regeneration Rune
+XDM_RUNE_REGENERATION_DESC = Restores HP and HEV over time.
+XDM_RUNE_TRAP_NAME = Booby Trap Rune
+XDM_RUNE_TRAP_DESC = Explodes when you die.
+XDM_RUNE_CLOAK_NAME = Cloaking Rune
+XDM_RUNE_CLOAK_DESC = Makes you semi-invisible.
+XDM_RUNE_SUPER_SPEED_NAME = Super Speed Rune
+XDM_RUNE_SUPER_SPEED_DESC = Increases your movement speed.
+XDM_RUNE_LOW_GRAVITY_NAME = Low Gravity Rune
+XDM_RUNE_LOW_GRAVITY_DESC = Lowers gravity for you.
+XDM_RUNE_SUPER_GLOCK_NAME = Super Glock Rune
+XDM_RUNE_SUPER_GLOCK_DESC = Unlimited ammo and a 40 FOV sniper mode.
+XDM_RUNE_SUPER_JUMP_NAME = Super Jump Rune
+XDM_RUNE_SUPER_JUMP_DESC = Long jump plus a +100 Z boost; use duck and jump while moving.
+XDM_RUNE_TELEPORT_NAME = Teleport Rune
+XDM_RUNE_TELEPORT_DESC = Teleports you to a random destination with userune.
+XDM_RUNE_USE_HINT = Use: userune
+XDM_RUNE_NONE = You don't have a rune.
+XDM_RUNE_NOT_USABLE = This rune has no active use.
+XDM_RUNE_DEAD = You must be alive to use a rune.
+XDM_RUNE_COOLDOWN = You have to wait %.1f seconds to use this rune again.
+XDM_RUNE_DISCARDED = Discarded!
+
+[es]
+XDM_RUNE_REGENERATION_NAME = Runa de Regeneración
+XDM_RUNE_REGENERATION_DESC = Regenera HP y HEV con el tiempo.
+XDM_RUNE_TRAP_NAME = Runa de Trampa
+XDM_RUNE_TRAP_DESC = Explota cuando mueres.
+XDM_RUNE_CLOAK_NAME = Runa de Invisibilidad
+XDM_RUNE_CLOAK_DESC = Te vuelve semi-invisible.
+XDM_RUNE_SUPER_SPEED_NAME = Runa de Súper Velocidad
+XDM_RUNE_SUPER_SPEED_DESC = Aumenta tu velocidad de movimiento.
+XDM_RUNE_LOW_GRAVITY_NAME = Runa de Baja Gravedad
+XDM_RUNE_LOW_GRAVITY_DESC = Reduce la gravedad solo para ti.
+XDM_RUNE_SUPER_GLOCK_NAME = Runa de Súper Pistola
+XDM_RUNE_SUPER_GLOCK_DESC = Munición infinita y modo francotirador de 40 FOV.
+XDM_RUNE_SUPER_JUMP_NAME = Runa de Súper Salto
+XDM_RUNE_SUPER_JUMP_DESC = Salto largo y +100 de impulso; agáchate y salta mientras corres.
+XDM_RUNE_TELEPORT_NAME = Runa de Teletransporte
+XDM_RUNE_TELEPORT_DESC = Te teletransporta a un destino aleatorio con userune.
+XDM_RUNE_USE_HINT = Usar: userune
+XDM_RUNE_NONE = No tienes ninguna runa.
+XDM_RUNE_NOT_USABLE = Esta runa no tiene un uso activo.
+XDM_RUNE_DEAD = Debes estar vivo para usar una runa.
+XDM_RUNE_COOLDOWN = Tienes que esperar %.1f segundos para usar esta runa de nuevo.
+XDM_RUNE_DISCARDED = ¡Descartada!
