@@ -63,6 +63,7 @@ server already runs BugfixedHL, you can skip copying them.
 
    - `addons/amxmodx/plugins/xdm_reborn.amxx` (required core)
    - `addons/amxmodx/plugins/xdm_reborn_rune_*.amxx` (optional rune plugins)
+   - `addons/amxmodx/configs/plugins-xdm_reborn.ini`
    - `addons/amxmodx/data/lang/xdm_reborn.txt`
    - `models/xdm_rune.mdl`
    - `sound/xdm.wav`, `sound/weapons/explode3.wav`, `sound/weapons/xbow_hit2.wav`
@@ -72,22 +73,14 @@ server already runs BugfixedHL, you can skip copying them.
    To install only some runes, copy the core and the desired
    `xdm_reborn_rune_*.amxx` files instead of the whole tree.
 
-3. Add the core and the rune plugins you want to
-   `addons/amxmodx/configs/plugins.ini`:
+3. XDM Reborn ships `addons/amxmodx/configs/plugins-xdm_reborn.ini`.
+   AMXX automatically loads every `configs/plugins-*.ini`, so you do not need
+   to add these plugins to `plugins.ini`. The file enables the core and all
+   runes; comment out a rune line to disable it. If you install only some
+   runes, also comment out the lines for the runes you did not copy.
 
-   ```ini
-   xdm_reborn.amxx
-   xdm_reborn_rune_regen.amxx
-   xdm_reborn_rune_trap.amxx
-   xdm_reborn_rune_cloak.amxx
-   xdm_reborn_rune_super_speed.amxx
-   xdm_reborn_rune_low_gravity.amxx
-   xdm_reborn_rune_super_glock.amxx
-   xdm_reborn_rune_super_jump.amxx
-   xdm_reborn_rune_teleport.amxx
-   ```
-
-   Remove or comment a rune line to disable that rune.
+   If you previously added XDM Reborn plugins to `plugins.ini`, remove those
+   lines to avoid loading them twice.
 
 4. Start the server. On first run AMXX creates the core configuration file and
    one configuration file for each installed rune plugin.
