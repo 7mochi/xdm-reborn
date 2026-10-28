@@ -254,8 +254,9 @@ Re-run it after upgrading the AMXX compiler. Other tasks: `just watch`,
 
 ## Credits
 
-Thanks to the original XDM team for the inspiration, and to:
+### Thanks to
 
+- The original XDM team for the inspiration
 - ConnorMcLeod
 - rtxa
 - Th3-822
@@ -268,8 +269,17 @@ Thanks to the original XDM team for the inspiration, and to:
 - Lev
 - Turanga_Leela
 - HamletEagle
-- DarkZito (Tester)
-- K3NS4N (Tester)
-- Assassin (Tester)
-- Dcarlox (Tester)
-- Intel Extreme Masters (Tester)
+
+### Testers
+
+- DarkZito
+- K3NS4N
+- Assassin
+- Dcarlox
+- Intel Extreme Masters
+
+### Contact
+
+- E-mail: alonso.caychop@protonmail.com
+- Discord: `_7mochi_`
+- Steam: <https://steamcommunity.com/id/_7mochi/>
