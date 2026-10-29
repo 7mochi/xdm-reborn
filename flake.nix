@@ -1,7 +1,7 @@
 {
   description = "XDM Reborn AMXX plugin";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
 
   outputs =
     { nixpkgs, ... }:
@@ -10,28 +10,38 @@
       pkgs = import nixpkgs { inherit system; };
       i686 = pkgs.pkgsi686Linux;
 
+      amxxpcWrapper = pkgs.writeShellScript "amxxpc-wrapper" ''
+        set -eu
+        dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+        exec ${i686.glibc}/lib/ld-linux.so.2 \
+          --library-path "${i686.glibc}/lib:${i686.gcc.cc.lib}/lib:$dir" \
+          "$dir/amxxpc.bin" "$@"
+      '';
+
       amxxpcNixPatch = pkgs.writeShellScriptBin "amxxpc-nix-patch" ''
         set -eu
 
         compiler_dir="''${1:-.compiler}"
         binary="$compiler_dir/amxxpc"
+        original="$compiler_dir/amxxpc.bin"
 
         if [ ! -f "$binary" ]; then
           echo "amxxpc not found at $binary" >&2
           exit 1
         fi
 
-        rpath="${i686.glibc}/lib:\$ORIGIN"
+        case "$(head -c 2 "$binary")" in
+          '#!') ;;
+          *) mv -f "$binary" "$original" ;;
+        esac
 
-        ${pkgs.patchelf}/bin/patchelf \
-          --set-interpreter "${i686.glibc}/lib/ld-linux.so.2" \
-          --set-rpath "$rpath" \
-          "$binary"
+        if [ ! -f "$original" ]; then
+          echo "amxxpc.bin not found at $original" >&2
+          exit 1
+        fi
 
-        for lib in "$compiler_dir"/amxxpc32.so; do
-          [ -f "$lib" ] || continue
-          ${pkgs.patchelf}/bin/patchelf --set-rpath "$rpath" "$lib"
-        done
+        cp "${amxxpcWrapper}" "$binary"
+        chmod +x "$binary"
       '';
     in
     {
