@@ -42,9 +42,6 @@
     - Pick up runes, then use them with "userune" or drop them with "droprune".
     - English and Spanish translations.
 
-    # TODO:
-    - Configurable fall damage
-
     # Thanks to:
     - The original XDM team for the inspiration
     - ConnorMcLeod
