@@ -18,10 +18,10 @@
     ]
   },
   "output": {
-    "plugins": "./dist/valve/addons/amxmodx/plugins",
-    "assets": "./dist/valve",
-    "scripts": "./dist/valve/addons/amxmodx/scripting",
-    "include": "./dist/valve/addons/amxmodx/scripting/include"
+    "plugins": "./valve/addons/amxmodx/plugins",
+    "assets": "./valve",
+    "scripts": "./valve/addons/amxmodx/scripting",
+    "include": "./valve/addons/amxmodx/scripting/include"
   },
   "thirdparty": {
     "dir": "./.thirdparty",

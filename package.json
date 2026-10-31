@@ -1,6 +1,6 @@
 {
-  "name": "xdm-reborn",
-  "version": "1.0",
+  "name": "xdm_reborn",
+  "version": "2.0.0",
   "author": "7mochi",
   "description": "AMXX plugin inspired by XDM (Xtreme Deathmatch)",
   "scripts": {
