@@ -1,0 +1,95 @@
+name: XDM Reborn - Build package
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.filter.outputs.build }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+      - name: Check whether build inputs changed
+        id: filter
+        uses: dorny/paths-filter@v4.0.3
+        with:
+          filters: |
+            build:
+              - 'src/**'
+              - 'assets/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.amxxpack.json'
+              - '.github/workflows/**'
+              - 'flake.nix'
+              - 'flake.lock'
+              - 'Justfile'
+
+  build:
+    name: Build XDM Reborn
+    needs: changes
+    if: needs.changes.outputs.build == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v6.4.0
+        with:
+          node-version: 20
+
+      - name: Cache npm downloads
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Cache amxxpack dependencies
+        uses: actions/cache@v6.1.0
+        with:
+          path: |
+            .compiler
+            .thirdparty
+          key: ${{ runner.os }}-amxxpack-${{ hashFiles('package.json', '.amxxpack.json') }}
+          restore-keys: |
+            ${{ runner.os }}-amxxpack-
+
+      - name: Install node dependencies
+        run: npm install
+
+      - name: Build package
+        run: npm run build
+
+      - name: Verify compiled plugins
+        run: test -n "$(find dist/valve/addons/amxmodx/plugins -maxdepth 1 -name '*.amxx' -print -quit)"
+
+      - name: Get package version and commit SHA for artifact naming
+        id: naming
+        run: |
+          echo "version=v$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload package
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: xdm-reborn-${{ steps.naming.outputs.version }}-dev-${{ steps.naming.outputs.sha_short }}
+          path: dist/valve
+          if-no-files-found: error
+          retention-days: 3
