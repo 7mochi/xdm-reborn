@@ -1,5 +1,19 @@
 [en]
 XDM_RUNE_REGENERATION_NAME = Regeneration Rune
+XDM_RUNE_SHOCK_NAME = Shock Rune
+XDM_RUNE_SHOCK_DESC = Damages nearby players with userune.
+XDM_RUNE_SUPER_CROWBAR_NAME = Super Crowbar Rune
+XDM_RUNE_SUPER_CROWBAR_DESC = Your crowbar deals massive damage.
+XDM_RUNE_HASTE_NAME = Haste Rune
+XDM_RUNE_HASTE_DESC = Your weapons cycle twice as fast.
+XDM_RUNE_SUPER_HOOK_NAME = Super Hook Rune
+XDM_RUNE_SUPER_HOOK_DESC = Your grapple is faster and deals damage.
+XDM_RUNE_PROTECTION_NAME = Protection Rune
+XDM_RUNE_PROTECTION_DESC = Halves incoming damage.
+XDM_RUNE_VAMPIRE_NAME = Vampire Rune
+XDM_RUNE_VAMPIRE_DESC = You gain 1 health for every 2 damage you deal.
+XDM_RUNE_SHIELD_NAME = Shield Rune
+XDM_RUNE_SHIELD_DESC = Bind a key to userune and become immune for 3 seconds.
 XDM_RUNE_REGENERATION_DESC = Restores HP and HEV over time.
 XDM_RUNE_TRAP_NAME = Booby Trap Rune
 XDM_RUNE_TRAP_DESC = Explodes when you die.
@@ -24,6 +38,20 @@ XDM_RUNE_DISCARDED = Discarded!
 
 [es]
 XDM_RUNE_REGENERATION_NAME = Runa de Regeneración
+XDM_RUNE_SHOCK_NAME = Runa de Descarga
+XDM_RUNE_SHOCK_DESC = Daña a los jugadores cercanos con userune.
+XDM_RUNE_SUPER_CROWBAR_NAME = Runa de Súper Palanca
+XDM_RUNE_SUPER_CROWBAR_DESC = Tu palanca hace un daño enorme.
+XDM_RUNE_HASTE_NAME = Runa de Prisa
+XDM_RUNE_HASTE_DESC = Tus armas disparan al doble de velocidad.
+XDM_RUNE_SUPER_HOOK_NAME = Runa de Súper Gancho
+XDM_RUNE_SUPER_HOOK_DESC = Tu gancho es más rápido y hace daño.
+XDM_RUNE_PROTECTION_NAME = Runa de Protección
+XDM_RUNE_PROTECTION_DESC = Reduce a la mitad el daño recibido.
+XDM_RUNE_VAMPIRE_NAME = Runa de Vampiro
+XDM_RUNE_VAMPIRE_DESC = Ganas 1 de vida por cada 2 de daño infligido.
+XDM_RUNE_SHIELD_NAME = Runa de Escudo
+XDM_RUNE_SHIELD_DESC = Asocia una tecla a userune y obtén 3 segundos de inmunidad.
 XDM_RUNE_REGENERATION_DESC = Regenera HP y HEV con el tiempo.
 XDM_RUNE_TRAP_NAME = Runa de Trampa
 XDM_RUNE_TRAP_DESC = Explota cuando mueres.
